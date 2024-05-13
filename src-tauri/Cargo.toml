@@ -1,0 +1,31 @@
+[package]
+name = "poll-scrape"
+version = "0.0.0"
+description = "Ugly Scraper"
+authors = ["you"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+#
+#
+
+[build-dependencies]
+tauri-build = { version = "2.0.0-beta", features = [] }
+
+[dependencies]
+tauri = { version = "2.0.0-beta", features = [] }
+tauri-plugin-shell = "2.0.0-beta"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chromiumoxide = { version = "0.5.7", default-features = false, features = [
+    "tokio-runtime",
+    "_fetcher-native-tokio",
+] }
+tokio = { version = "1.36.0", features = ["full"] }
+# async-std = "1.12.0" {version = "1.9.0", features = ["attributes"] }
+tokio-macros = { version = "0.2.0-alpha.6" }
+futures = "0.3.30"
+anyhow = "1.0.81"
+uuid = { version = "1.8.0", features = ["v4", "fast-rng", "serde"] }
+lazy_static = "1.4.0"
+mut_static = "5.0.0"
