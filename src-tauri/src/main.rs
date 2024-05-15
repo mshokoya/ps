@@ -1,26 +1,48 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use taskqueue::TaskQueue;
+mod actions;
+mod libs;
+
+use actions::apollo::confirm::index::check_task;
+use chromiumoxide::{Browser, BrowserConfig};
+// use futures::StreamExt;
+use libs::taskqueue::index::TaskQueue;
+use libs::{db::index::DB, scraper::Scraper};
+use std::env;
 use tauri::Manager;
 
-mod actions;
-mod defaults;
-mod taskqueue;
-
-#[tokio::main]
+#[async_std::main]
 // https://stackoverflow.com/questions/73551266/tauri-is-there-some-way-to-access-apphandler-or-window-in-regular-struct-or-sta
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    env::set_var("RUST_BACKTRACE", "1");
+    // let (browser, mut handler) =
+    //     Browser::launch(BrowserConfig::builder().with_head().build()?).await?;
+
+    // async_std::task::spawn(async move {
+    //     loop {
+    //         let _event = handler.next().await.unwrap();
+    //     }
+    // });
+
     tauri::Builder::default()
         .setup(|app| {
+            // db
+            let db = DB::new();
+            db.init();
+            app.manage(db);
+
+            // scraper
+            // let scraper = Scraper::new(browser);
+            // app.manage(scraper);
+
+            // ctx
             let app_handle = app.app_handle().clone();
             app.manage(TaskQueue::new(app_handle));
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![
-            actions::apollo::confirm::confirm_task
-        ])
+        .invoke_handler(tauri::generate_handler![check_task])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 
