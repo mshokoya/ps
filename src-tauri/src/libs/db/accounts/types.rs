@@ -11,7 +11,7 @@ struct CookieParse {
 
 #[derive(TS)]
 #[ts(export)]
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Cookies(String);
 
 impl Into<Vec<CookieParam>> for Cookies {
@@ -26,7 +26,7 @@ impl Into<Vec<CookieParam>> for Cookies {
 
 #[derive(TS)]
 #[ts(export)]
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct History {
     pub total_page_scrape: u8,
     pub scrape_time: Option<u64>,

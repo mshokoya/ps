@@ -6,11 +6,17 @@ use uuid::Uuid;
 
 use crate::{
     actions::controllers::{Response as R, TaskType},
-    libs::taskqueue::{
-        index::TaskQueue,
-        types::{TQTimeout, Task, TaskGroup},
+    libs::{
+        scraper::Scraper,
+        taskqueue::{
+            index::TaskQueue,
+            types::{TQTimeout, Task, TaskGroup},
+        },
     },
+    SCRAPER,
 };
+
+use super::types::ApolloCheckArgs;
 
 #[tauri::command]
 pub fn check_task(ctx: AppHandle, args: Value) -> Value {
@@ -41,4 +47,27 @@ pub fn check_task(ctx: AppHandle, args: Value) -> Value {
     R::<()>::ok_none()
 }
 
-pub fn apollo_check(ctx: AppHandle, task_id: String, args: Value) {}
+pub async fn apollo_check(ctx: AppHandle, task_id: String, args: Value) -> Option<()> {
+    let args: ApolloCheckArgs = serde_json::from_value(args).unwrap();
+
+    let page = unsafe { SCRAPER.incog().await.unwrap() };
+
+    page.goto("https://crates.io/search?q=chromium&sort=downloads")
+        .await.unwrap()
+        .goto("https://www.youtube.com")
+        .await.unwrap()
+        .goto("https://dash.cloudflare.com/login")
+        .await.unwrap()
+        .goto("https://profy.dev/project/react-job-simulator/welcome")
+        .await.unwrap()
+        .goto("https://www.youtube.com/watch?v=Ahwoks_dawU")
+        .await.unwrap()
+        .goto("https://docs.rs/chromiumoxide/0.5.0/chromiumoxide/handler/struct.Handler.html#method.try_poll_next")
+        .await.unwrap()
+        .goto("https://www.game.com")
+        .await.unwrap()
+        .goto("https://www.sitelike.org/similar/downduck.com/")
+        .await.unwrap();
+
+    todo!();
+}

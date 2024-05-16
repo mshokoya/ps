@@ -6,17 +6,24 @@ mod libs;
 
 use actions::apollo::confirm::index::check_task;
 use chromiumoxide::{Browser, BrowserConfig};
-// use futures::StreamExt;
+use futures::StreamExt;
 use libs::taskqueue::index::TaskQueue;
 use libs::{db::index::DB, scraper::Scraper};
+use once_cell::sync::Lazy;
+// use static_init::dynamic;
 use std::env;
 use tauri::Manager;
+
+// #[dynamic]
+// static mut SCRAPER: Scraper = Scraper::new();
+
+static mut SCRAPER: Lazy<Scraper> = Lazy::new(|| Scraper::new());
 
 #[async_std::main]
 // https://stackoverflow.com/questions/73551266/tauri-is-there-some-way-to-access-apphandler-or-window-in-regular-struct-or-sta
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     env::set_var("RUST_BACKTRACE", "1");
-    // let (browser, mut handler) =
+    // let (mut browser, mut handler) =
     //     Browser::launch(BrowserConfig::builder().with_head().build()?).await?;
 
     // async_std::task::spawn(async move {
@@ -33,7 +40,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             app.manage(db);
 
             // scraper
-            // let scraper = Scraper::new(browser);
+            unsafe { SCRAPER.init() };
+            // let scraper = Scraper::new();
             // app.manage(scraper);
 
             // ctx

@@ -18,20 +18,20 @@ pub struct Response<T = ()> {
 
 impl<T> Response<T> {
     pub fn ok_none() -> Value {
-        let res: Response<()> = Response {
+        serde_json::to_value(Response::<()> {
             ok: true,
             message: None,
             data: None,
-        };
-        serde_json::to_value(res).unwrap()
+        })
+        .unwrap()
     }
     pub fn fail_none() -> Value {
-        let res: Response<()> = Response {
+        serde_json::to_value(Response::<()> {
             ok: false,
             message: None,
             data: None,
-        };
-        serde_json::to_value(res).unwrap()
+        })
+        .unwrap()
     }
 }
 
@@ -79,10 +79,10 @@ pub enum TaskType {
 }
 
 impl TaskType {
-    pub fn exec(&self, ctx: AppHandle, task_id: String, args: Value) {
+    pub async fn exec(&self, ctx: AppHandle, task_id: String, args: Value) {
         match self {
-            TaskType::ApolloCheck => apollo_check(ctx, task_id, args),
-            _ => (),
+            TaskType::ApolloCheck => apollo_check(ctx, task_id, args).await,
+            _ => None,
         };
     }
 }
