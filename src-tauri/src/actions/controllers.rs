@@ -1,5 +1,4 @@
-use std::any::Any;
-
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tauri::AppHandle;
@@ -41,7 +40,7 @@ pub struct ConfirmTaskArgs {
     pub timeout: Option<TQTimeout>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct AccountArg {
     pub id: Option<Uuid>,
     pub domain: Option<String>, // enum Domain
@@ -63,7 +62,7 @@ pub struct AccountArg {
     pub history: Option<HistoryArg>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct HistoryArg {
     pub total_page_scrape: Option<u8>,
     pub scrape_time: Option<u64>,
@@ -79,10 +78,15 @@ pub enum TaskType {
 }
 
 impl TaskType {
-    pub async fn exec(&self, ctx: AppHandle, task_id: String, args: Value) {
+    pub async fn exec(
+        &self,
+        ctx: &AppHandle,
+        task_id: &Uuid,
+        args: Option<Value>,
+    ) -> anyhow::Result<Option<Value>> {
         match self {
             TaskType::ApolloCheck => apollo_check(ctx, task_id, args).await,
-            _ => None,
-        };
+            _ => Ok(None),
+        }
     }
 }

@@ -24,8 +24,8 @@ pub struct Task {
     pub task_type: TaskType,
     pub message: &'static str,
     pub timeout: Option<TQTimeout>,
-    pub metadata: Option<Arc<HashMap<String, Value>>>,
-    pub args: Option<Arc<Value>>,
+    pub metadata: Option<Value>,
+    pub args: Option<Value>,
 }
 
 #[derive(Debug)]
@@ -35,19 +35,20 @@ pub struct Process {
 }
 
 #[derive(Clone, Serialize, Debug)]
-pub struct TaskEvent {
-    pub task_id: Uuid,
-    pub message: &'static str,
+pub struct TaskEvent<'a> {
+    pub task_id: &'a Uuid,
+    pub message: String,
+    pub ok: Option<bool>,
     pub task_type: TaskType,
-    pub metadata: Option<Arc<HashMap<String, Value>>>,
-    pub action_data: ActionData,
+    pub metadata: &'a Option<Value>,
+    pub action_data: ActionData<'a>,
 }
 
 #[derive(Clone, Serialize, Debug)]
-pub struct ActionData {
-    pub task_group: TaskGroup,
-    pub task_type: TaskType,
-    pub metadata: Option<HashMap<String, Value>>,
+pub struct ActionData<'a> {
+    pub task_group: &'a TaskGroup,
+    pub task_type: &'a TaskType,
+    pub metadata: Option<Value>,
 }
 
 #[derive(Clone, Copy, Serialize, Debug)]

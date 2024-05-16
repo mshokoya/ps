@@ -40,13 +40,14 @@ impl TaskQueue {
             .emit(
                 Channels::WaitQueue.into(),
                 TaskEvent {
-                    task_id: task.task_id,
-                    message: "added new task to wait queue",
+                    task_id: &task.task_id,
+                    message: "added new task to wait queue".to_string(),
+                    ok: None,
                     task_type: TaskType::Enqueue,
-                    metadata: task.metadata,
+                    metadata: &task.metadata,
                     action_data: ActionData {
-                        task_group: task.task_group,
-                        task_type: task.task_type,
+                        task_group: &task.task_group,
+                        task_type: &task.task_type,
                         metadata: None,
                     },
                 },
@@ -65,13 +66,14 @@ impl TaskQueue {
             .emit(
                 Channels::WaitQueue.into(),
                 TaskEvent {
-                    task_id: task_cln.task_id,
-                    message: "removed task from wait queue",
+                    task_id: &task_cln.task_id,
+                    message: "removed task from wait queue".to_string(),
+                    ok: None,
                     task_type: TaskType::Dequeue,
-                    metadata: task_cln.metadata,
+                    metadata: &task_cln.metadata,
                     action_data: ActionData {
-                        task_group: task_cln.task_group,
-                        task_type: task_cln.task_type,
+                        task_group: &task_cln.task_group,
+                        task_type: &task_cln.task_type,
                         metadata: None,
                     },
                 },
@@ -87,13 +89,14 @@ impl TaskQueue {
             .emit(
                 Channels::ProcessQueue.into(),
                 TaskEvent {
-                    task_id: task.task_id,
-                    message: "new task added to processing queue",
+                    task_id: &task.task_id,
+                    message: "new task added to processing queue".to_string(),
+                    ok: None,
                     task_type: TaskType::Enqueue,
-                    metadata: task.metadata,
+                    metadata: &task.metadata,
                     action_data: ActionData {
-                        task_group: task.task_group,
-                        task_type: task.task_type,
+                        task_group: &task.task_group,
+                        task_type: &task.task_type,
                         metadata: None,
                     },
                 },
@@ -102,8 +105,8 @@ impl TaskQueue {
         self.exec();
     }
 
-    pub fn p_dequeue(&self, task_id: Uuid) {
-        let ps = remove_process(&self.process_queue, &task_id).unwrap();
+    pub fn p_dequeue(&self, task_id: &Uuid) {
+        let ps = remove_process(&self.process_queue, task_id).unwrap();
         let mut task = ps.task.clone();
 
         if let Some(mut t_out) = task.timeout {
@@ -121,12 +124,13 @@ impl TaskQueue {
                 Channels::ProcessQueue.into(),
                 TaskEvent {
                     task_id,
-                    message: "removed completed task from queue",
+                    message: "removed completed task from queue".to_string(),
                     task_type: TaskType::Dequeue,
-                    metadata: ps.task.metadata,
+                    ok: None,
+                    metadata: &ps.task.metadata,
                     action_data: ActionData {
-                        task_group: ps.task.task_group,
-                        task_type: ps.task.task_type,
+                        task_group: &ps.task.task_group,
+                        task_type: &ps.task.task_type,
                         metadata: None,
                     },
                 },
@@ -145,13 +149,14 @@ impl TaskQueue {
                     .emit(
                         Channels::TimeoutQueue.into(),
                         TaskEvent {
-                            task_id: task_cln.task_id,
-                            message: "removed task from timeout queue",
+                            task_id: &task_cln.task_id,
+                            message: "removed task from timeout queue".to_string(),
+                            ok: None,
                             task_type: TaskType::Enqueue,
-                            metadata: task_cln.metadata,
+                            metadata: &task_cln.metadata,
                             action_data: ActionData {
-                                task_group: task_cln.task_group,
-                                task_type: task_cln.task_type,
+                                task_group: &task_cln.task_group,
+                                task_type: &task_cln.task_type,
                                 metadata: None,
                             },
                         },
@@ -163,13 +168,14 @@ impl TaskQueue {
             .emit(
                 Channels::TimeoutQueue.into(),
                 TaskEvent {
-                    task_id: task.task_id,
-                    message: "added task to timeout queue",
+                    task_id: &task.task_id,
+                    message: "added task to timeout queue".to_string(),
+                    ok: None,
                     task_type: TaskType::Enqueue,
-                    metadata: task.metadata,
+                    metadata: &task.metadata,
                     action_data: ActionData {
-                        task_group: task.task_group,
-                        task_type: task.task_type,
+                        task_group: &task.task_group,
+                        task_type: &task.task_type,
                         metadata: None,
                     },
                 },
@@ -213,32 +219,51 @@ impl TaskQueue {
         if pq_len >= self.max_processes.into() {
             return;
         };
-        drop(pq);
         let task = match self.w_dequeue() {
             None => return,
             Some(tsk) => tsk,
         };
-        let app_handle = self.app_handle.clone();
+        drop(pq);
+
+        let ctx = self.app_handle.clone();
         let tsk_cln = task.clone();
 
         let ps = spawn(async move {
-            app_handle.state::<TaskQueue>().p_dequeue(tsk_cln.task_id);
-            app_handle
-                .emit(
-                    Channels::ProcessQueue.into(),
-                    TaskEvent {
-                        task_id: tsk_cln.task_id,
-                        message: "removed completed task from queue",
-                        task_type: TaskType::Enqueue,
-                        metadata: tsk_cln.metadata,
-                        action_data: ActionData {
-                            task_group: tsk_cln.task_group,
-                            task_type: tsk_cln.task_type,
-                            metadata: None,
-                        },
+            ctx.state::<TaskQueue>().p_dequeue(&tsk_cln.task_id);
+            let mut ok: bool = false;
+            let mut message = "removed completed task from queue".to_string();
+            let metadata = match tsk_cln
+                .task_type
+                .exec(&ctx, &tsk_cln.task_id, tsk_cln.args)
+                .await
+            {
+                Ok(val) => {
+                    ok = true;
+                    val
+                }
+                Err(err) => {
+                    message = err.to_string();
+                    ok = false;
+                    None
+                }
+            };
+
+            ctx.emit(
+                Channels::ProcessQueue.into(),
+                TaskEvent {
+                    task_id: &tsk_cln.task_id,
+                    message,
+                    ok: Some(ok),
+                    task_type: TaskType::Enqueue,
+                    metadata: &tsk_cln.metadata,
+                    action_data: ActionData {
+                        task_group: &tsk_cln.task_group,
+                        task_type: &tsk_cln.task_type,
+                        metadata,
                     },
-                )
-                .unwrap();
+                },
+            )
+            .unwrap();
         });
 
         let mut pq = self.process_queue.lock().unwrap();
