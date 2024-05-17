@@ -1,6 +1,7 @@
 use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Error;
+use polodb_core::bson::to_document;
 use serde_json::Value;
 use tauri::{AppHandle, Manager};
 use uuid::Uuid;
@@ -8,7 +9,7 @@ use uuid::Uuid;
 use crate::{
     actions::controllers::{Response as R, TaskType},
     libs::{
-        db::accounts::types::AccountArg,
+        db::{accounts::types::AccountArg, entity::Entity, index::DB},
         taskqueue::{
             index::TaskQueue,
             types::{TQTimeout, Task, TaskGroup},
@@ -37,15 +38,39 @@ pub fn check_task(ctx: AppHandle, args: Value) -> Value {
 
     println!("2");
 
-    ctx.state::<TaskQueue>().w_enqueue(Task {
-        task_id: Uuid::new_v4(),
-        task_type: TaskType::ApolloCheck,
-        task_group: TaskGroup::Apollo,
-        message: "Getting credits",
-        metadata,
-        timeout,
-        args: fmt_args,
-    });
+    ctx.state::<DB>().insert_one::<AccountArg>(
+        Entity::Account,
+        AccountArg {
+            _id: None,
+            domain: Some("test value domain".to_string()), // enum Domain
+            trial_time: Some(342),
+            suspended: Some(false),
+            login_type: Some("test value login_type".to_string()), // enum
+            verified: Some(true),
+            email: Some("test value email".to_string()),
+            password: Some("test value password".to_string()),
+            proxy: Some("test value proxy".to_string()),
+            credits_used: Some(342),
+            credit_limit: Some(342),
+            renewal_date: Some(342),
+            renewal_start_date: Some(342),
+            renewal_end_date: Some(342),
+            trial_days_left: Some(342),
+            last_used: Some(342),
+            cookies: None,
+            history: None,
+        },
+    );
+
+    // ctx.state::<TaskQueue>().w_enqueue(Task {
+    //     task_id: Uuid::new_v4(),
+    //     task_type: TaskType::ApolloCheck,
+    //     task_group: TaskGroup::Apollo,
+    //     message: "Getting credits",
+    //     metadata,
+    //     timeout,
+    //     args: fmt_args,
+    // });
 
     R::<()>::ok_none()
 }

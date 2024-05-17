@@ -2,15 +2,11 @@ use std::fmt;
 
 pub trait EntityTrait {
     fn is_valid(&mut self) -> bool;
-    fn fmt_insert(&mut self) -> Self;
-}
-
-pub trait Tess {
-    fn lol() -> bool;
+    fn fmt_insert(&mut self) -> &Self;
 }
 
 #[derive(Debug)]
-struct EntityError;
+pub struct EntityError;
 
 impl fmt::Display for EntityError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -18,8 +14,6 @@ impl fmt::Display for EntityError {
     }
 }
 
-// ==================================
-// ==================================
 // ==================================
 // ==================================
 
@@ -53,15 +47,4 @@ impl Entity {
             Entity::Record => "record",
         }
     }
-
-    // pub fn doc_to_entity<T: Tess>(&self, doc: Document) -> anyhow::Result<T> {
-    //     match self {
-    //         Entity::Account => from_document::<Account>(doc).context("gfdghj"),
-    //         Entity::Domain => from_document::<Account>(doc),
-    //         Entity::Metadata => from_document::<Account>(doc),
-    //         Entity::Proxy => from_document::<Account>(doc),
-    //         Entity::Records => from_document::<Account>(doc),
-    //         Entity::Record => from_document::<Account>(doc),
-    //     }
-    // }
 }

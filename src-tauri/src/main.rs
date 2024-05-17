@@ -25,7 +25,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             app.manage(db);
 
             // scraper
-            unsafe { SCRAPER.init() };
+            // unsafe { SCRAPER.init() };
 
             // ctx
             let app_handle = app.app_handle().clone();

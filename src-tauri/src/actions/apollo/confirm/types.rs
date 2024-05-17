@@ -6,8 +6,3 @@ use uuid::Uuid;
 pub struct ApolloCheckArgs {
     account_id: Uuid,
 }
-
-// #[derive(Deserialize, Debug)]
-// pub struct ApolloCheckArgs {
-//     account_id: String,
-// }

@@ -29,48 +29,48 @@ use serde::Serialize;
 
 #[derive(Debug, Serialize)]
 pub struct Records {
-    _id: String,
-    scrape_id: String,
-    url: String,
-    data: Record,
+    pub _id: String,
+    pub scrape_id: String,
+    pub url: String,
+    pub data: Record,
 }
 
 #[derive(Debug, Serialize)]
 pub struct Record {
     #[serde(rename(serialize = "Name", deserialize = "name"))]
-    name: String,
+    pub name: String,
     #[serde(rename(serialize = "Firstname", deserialize = "firstname"))]
-    firstname: String,
+    pub firstname: String,
     #[serde(rename(serialize = "Lastname", deserialize = "lastname"))]
-    lastname: String,
+    pub lastname: String,
     #[serde(rename(serialize = "Linkedin", deserialize = "linkedin"))]
-    linkedin: String,
+    pub linkedin: String,
     #[serde(rename(serialize = "Title", deserialize = "title"))]
-    title: String,
+    pub title: String,
     #[serde(rename(serialize = "Company Name", deserialize = "company_name"))]
-    company_name: String,
+    pub company_name: String,
     #[serde(rename(serialize = "Company Website", deserialize = "company_website"))]
-    company_website: String,
+    pub company_website: String,
     #[serde(rename(serialize = "Company Linkedin", deserialize = "company_linkedin"))]
-    comapny_linkedin: String,
+    pub comapny_linkedin: String,
     #[serde(rename(serialize = "Company Twitter", deserialize = "company_twitter"))]
-    company_twitter: String,
+    pub company_twitter: String,
     #[serde(rename(serialize = "Company Facebook", deserialize = "company_facebook"))]
-    company_facebook: String,
+    pub company_facebook: String,
     #[serde(rename(serialize = "Email", deserialize = "email"))]
-    email: String,
+    pub email: String,
     #[serde(rename(serialize = "isVerified", deserialize = "is_verified"))]
-    is_verified: bool,
+    pub is_verified: bool,
     #[serde(rename(serialize = "Company Location", deserialize = "company_location"))]
-    company_location: String,
+    pub company_location: String,
     #[serde(rename(serialize = "Employees", deserialize = "employees"))]
-    employees: String,
+    pub employees: String,
     #[serde(rename(serialize = "Phone", deserialize = "phone"))]
-    phone: String,
+    pub phone: String,
     #[serde(rename(serialize = "Industry", deserialize = "industry"))]
-    industry: String,
+    pub industry: String,
     #[serde(rename(serialize = "Keywords", deserialize = "keywords"))]
-    keywords: Vec<String>,
+    pub keywords: Vec<String>,
 }
 
 // =============================
@@ -78,11 +78,11 @@ pub struct Record {
 // =============================
 
 pub struct RecordsArg {
-    _id: Option<String>,
-    scrape_id: Option<String>,
-    protocol: Option<String>,
-    url: Option<String>,
-    data: Option<RecordArg>,
+    pub _id: Option<String>,
+    pub scrape_id: Option<String>,
+    pub protocol: Option<String>,
+    pub url: Option<String>,
+    pub data: Option<RecordArg>,
 }
 
 impl RecordsArg {
@@ -113,43 +113,43 @@ impl RecordsArg {
 #[derive(Debug, Serialize)]
 pub struct RecordArg {
     #[serde(rename(serialize = "Name", deserialize = "name"))]
-    name: Option<String>,
+    pub name: Option<String>,
     #[serde(rename(serialize = "Firstname", deserialize = "firstname"))]
-    firstname: Option<String>,
+    pub firstname: Option<String>,
     #[serde(rename(serialize = "Lastname", deserialize = "lastname"))]
-    lastname: Option<String>,
+    pub lastname: Option<String>,
     #[serde(rename(serialize = "Linkedin", deserialize = "linkedin"))]
-    linkedin: Option<String>,
+    pub linkedin: Option<String>,
     #[serde(rename(serialize = "Title", deserialize = "title"))]
-    title: Option<String>,
+    pub title: Option<String>,
     #[serde(rename(serialize = "Company Name", deserialize = "company_name"))]
-    company_name: Option<String>,
+    pub company_name: Option<String>,
     #[serde(rename(serialize = "Company Website", deserialize = "company_website"))]
-    company_website: Option<String>,
+    pub company_website: Option<String>,
     #[serde(rename(serialize = "Company Linkedin", deserialize = "company_linkedin"))]
-    comapny_linkedin: Option<String>,
+    pub comapny_linkedin: Option<String>,
     #[serde(rename(serialize = "Company Twitter", deserialize = "company_twitter"))]
-    company_twitter: Option<String>,
+    pub company_twitter: Option<String>,
     #[serde(rename(serialize = "Company Facebook", deserialize = "company_facebook"))]
-    company_facebook: Option<String>,
+    pub company_facebook: Option<String>,
     #[serde(rename(serialize = "Email #1", deserialize = "email_1"))]
-    email_1: Option<String>,
+    pub email_1: Option<String>,
     #[serde(rename(serialize = "Email #2", deserialize = "email_2"))]
-    email_2: Option<String>,
+    pub email_2: Option<String>,
     #[serde(rename(serialize = "Email #3", deserialize = "email_3"))]
-    email_3: Option<String>,
+    pub email_3: Option<String>,
     #[serde(rename(serialize = "isVerified", deserialize = "is_verified"))]
-    is_verified: Option<bool>,
+    pub is_verified: Option<bool>,
     #[serde(rename(serialize = "Company Location", deserialize = "company_location"))]
-    company_location: Option<String>,
+    pub company_location: Option<String>,
     #[serde(rename(serialize = "Employees", deserialize = "employees"))]
-    employees: Option<String>,
+    pub employees: Option<String>,
     #[serde(rename(serialize = "Phone", deserialize = "phone"))]
-    phone: Option<String>,
+    pub phone: Option<String>,
     #[serde(rename(serialize = "Industry", deserialize = "industry"))]
-    industry: Option<String>,
+    pub industry: Option<String>,
     #[serde(rename(serialize = "Keywords", deserialize = "keywords"))]
-    keywords: Option<Vec<String>>,
+    pub keywords: Option<Vec<String>>,
 }
 
 impl RecordArg {

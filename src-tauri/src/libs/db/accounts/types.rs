@@ -3,42 +3,13 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use uuid::Uuid;
 
-#[derive(Deserialize, Debug, Clone)]
-struct CookieParse {
-    key: String,
-    value: String,
-}
-
-#[derive(TS)]
-#[ts(export)]
-#[derive(Debug, Serialize)]
-pub struct Cookies(String);
-
-impl Into<Vec<CookieParam>> for Cookies {
-    fn into(self: Self) -> Vec<CookieParam> {
-        let fields: Vec<CookieParse> = serde_json::from_str(&self.0).unwrap();
-        fields
-            .iter()
-            .map(|c| CookieParam::new(c.key.to_owned(), c.value.to_owned()))
-            .collect::<Vec<CookieParam>>()
-    }
-}
-
-#[derive(TS)]
-#[ts(export)]
-#[derive(Debug, Serialize)]
-pub struct History {
-    pub total_page_scrape: u8,
-    pub scrape_time: Option<u64>,
-    pub list_name: String,
-    pub scrape_id: Uuid,
-}
+use crate::libs::db::entity::EntityTrait;
 
 #[derive(TS)]
 #[ts(export)]
 #[derive(Debug, Serialize)]
 pub struct Account {
-    pub _id: Uuid,
+    pub _id: String,
     pub domain: String, // enum Domain
     pub trial_time: Option<u64>,
     pub suspended: bool,
@@ -58,13 +29,44 @@ pub struct Account {
     pub history: Vec<History>,
 }
 
+#[derive(TS)]
+#[ts(export)]
+#[derive(Debug, Serialize)]
+pub struct History {
+    pub total_page_scrape: u8,
+    pub scrape_time: Option<u64>,
+    pub list_name: String,
+    pub scrape_id: String,
+}
+
+#[derive(TS)]
+#[ts(export)]
+#[derive(Debug, Serialize)]
+pub struct Cookies(String);
+
+impl Into<Vec<CookieParam>> for Cookies {
+    fn into(self: Self) -> Vec<CookieParam> {
+        let fields: Vec<CookieParse> = serde_json::from_str(&self.0).unwrap();
+        fields
+            .iter()
+            .map(|c| CookieParam::new(c.key.to_owned(), c.value.to_owned()))
+            .collect::<Vec<CookieParam>>()
+    }
+}
+
+#[derive(Deserialize, Debug, Clone)]
+struct CookieParse {
+    key: String,
+    value: String,
+}
+
 // ===========================
 // ==========================
 // ===========================
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct AccountArg {
-    pub _id: Option<Uuid>,
+    pub _id: Option<String>,
     pub domain: Option<String>, // enum Domain
     pub trial_time: Option<u64>,
     pub suspended: Option<bool>,
@@ -84,14 +86,14 @@ pub struct AccountArg {
     pub history: Option<Vec<HistoryArg>>,
 }
 
-impl AccountArg {
-    pub fn is_valid(&mut self) -> bool {
+impl EntityTrait for AccountArg {
+    fn is_valid(&mut self) -> bool {
         if self.email.is_none() || self.password.is_none() {
             return false;
         }
         true
     }
-    pub fn fmt_insert(&mut self) -> &AccountArg {
+    fn fmt_insert(&mut self) -> &AccountArg {
         // if acc.domain.is_none() {}
         // if acc.account_type.is_none() {
         //     acc.account_type = "free"
@@ -162,5 +164,5 @@ pub struct HistoryArg {
     pub total_page_scrape: Option<u8>,
     pub scrape_time: Option<u64>,
     pub list_name: Option<String>,
-    pub scrape_id: Option<Uuid>,
+    pub scrape_id: Option<String>,
 }
