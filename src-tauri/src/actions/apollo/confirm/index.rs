@@ -6,10 +6,13 @@ use tauri::{AppHandle, Manager};
 use uuid::Uuid;
 
 use crate::{
-    actions::controllers::{AccountArg, Response as R, TaskType},
-    libs::taskqueue::{
-        index::TaskQueue,
-        types::{TQTimeout, Task, TaskGroup},
+    actions::controllers::{Response as R, TaskType},
+    libs::{
+        db::accounts::types::AccountArg,
+        taskqueue::{
+            index::TaskQueue,
+            types::{TQTimeout, Task, TaskGroup},
+        },
     },
     SCRAPER,
 };
@@ -24,10 +27,15 @@ pub fn check_task(ctx: AppHandle, args: Value) -> Value {
         Some(val) => Some(val.to_owned()),
         None => None,
     };
+
+    println!("1");
+
     let fmt_args = match args.get("account_id") {
         Some(_) => Some(args.to_owned()),
         None => return R::<()>::fail_none(),
     };
+
+    println!("2");
 
     ctx.state::<TaskQueue>().w_enqueue(Task {
         task_id: Uuid::new_v4(),
@@ -47,30 +55,29 @@ pub async fn apollo_check(
     task_id: &Uuid,
     args: Option<Value>,
 ) -> Result<Option<Value>, Error> {
-    let args: ApolloCheckArgs = serde_json::from_value(args.unwrap()).unwrap();
-
-    let page = unsafe { SCRAPER.incog().await.unwrap() };
+    let args: ApolloCheckArgs = serde_json::from_value(args.unwrap())?;
+    let page = unsafe { SCRAPER.incog().await? };
 
     page.goto("https://crates.io/search?q=chromium&sort=downloads")
-        .await.unwrap()
+        .await?
         .goto("https://www.youtube.com")
-        .await.unwrap()
+        .await?
         .goto("https://dash.cloudflare.com/login")
-        .await.unwrap()
+        .await?
         .goto("https://profy.dev/project/react-job-simulator/welcome")
-        .await.unwrap()
+        .await?
         .goto("https://www.youtube.com/watch?v=Ahwoks_dawU")
-        .await.unwrap()
+        .await?
         .goto("https://docs.rs/chromiumoxide/0.5.0/chromiumoxide/handler/struct.Handler.html#method.try_poll_next")
-        .await.unwrap()
+        .await?
         .goto("https://www.game.com")
-        .await.unwrap()
+        .await?
         .goto("https://www.sitelike.org/similar/downduck.com/")
-        .await.unwrap();
+        .await?;
 
     Ok(Some(
         serde_json::to_value(AccountArg {
-            id: Some(Uuid::new_v4()),
+            _id: Some(Uuid::new_v4()),
             domain: Some("test value domain".to_string()), // enum Domain
             trial_time: Some(342),
             suspended: Some(false),
