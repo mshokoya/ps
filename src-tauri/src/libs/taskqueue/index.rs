@@ -4,7 +4,7 @@ use std::collections::VecDeque;
 use std::sync::Mutex;
 use std::time::Duration;
 use tauri::{AppHandle, Manager};
-use uuid::Uuid;
+// use String::String;
 
 use super::types::{ActionData, Channels, Process, Task, TaskEvent};
 
@@ -105,7 +105,7 @@ impl TaskQueue {
         self.exec();
     }
 
-    pub fn p_dequeue(&self, task_id: &Uuid) {
+    pub fn p_dequeue(&self, task_id: &String) {
         let ps = remove_process(&self.process_queue, task_id).unwrap();
         let mut task = ps.task.clone();
 
@@ -185,7 +185,7 @@ impl TaskQueue {
         self.exec();
     }
 
-    // fn t_dequeue(&self, task_id: Uuid) {
+    // fn t_dequeue(&self, task_id: String) {
     //     println!("{}", "t d 1");
     //     let mut pq = self.timeout_queue.lock().unwrap();
     //     let idx = pq
@@ -273,13 +273,13 @@ impl TaskQueue {
     }
 }
 
-fn remove_task(queue: &Mutex<VecDeque<Task>>, task_id: &Uuid) -> Option<Task> {
+fn remove_task(queue: &Mutex<VecDeque<Task>>, task_id: &String) -> Option<Task> {
     let mut tq = queue.lock().unwrap();
     let idx = tq.iter().position(|t| t.task_id == *task_id).unwrap_or(225);
     tq.swap_remove_back(idx)
 }
 
-fn remove_process(queue: &Mutex<VecDeque<Process>>, task_id: &Uuid) -> Option<Process> {
+fn remove_process(queue: &Mutex<VecDeque<Process>>, task_id: &String) -> Option<Process> {
     let mut pq = queue.lock().unwrap();
     let idx = pq
         .iter()

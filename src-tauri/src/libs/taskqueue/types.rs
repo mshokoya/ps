@@ -1,12 +1,7 @@
-use std::{
-    collections::{HashMap, VecDeque},
-    sync::{Arc, Mutex},
-};
-
 use async_std::task::JoinHandle;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use uuid::Uuid;
+// use uuid::Uuid;
 
 use crate::actions::controllers::TaskType;
 
@@ -19,7 +14,8 @@ pub struct TQTimeout {
 
 #[derive(Clone, Debug)]
 pub struct Task {
-    pub task_id: Uuid,
+    // pub task_id: Uuid,
+    pub task_id: String,
     pub task_group: TaskGroup,
     pub task_type: TaskType,
     pub message: &'static str,
@@ -36,7 +32,8 @@ pub struct Process {
 
 #[derive(Clone, Serialize, Debug)]
 pub struct TaskEvent<'a> {
-    pub task_id: &'a Uuid,
+    // pub task_id: &'a Uuid,
+    pub task_id: &'a String,
     pub message: String,
     pub ok: Option<bool>,
     pub task_type: TaskType,

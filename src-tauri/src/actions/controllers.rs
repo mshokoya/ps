@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tauri::AppHandle;
-use uuid::Uuid;
+// use uuid::Uuid;
 
 use crate::libs::{db::accounts::types::AccountArg, taskqueue::types::TQTimeout};
 
@@ -50,7 +50,8 @@ impl TaskType {
     pub async fn exec(
         &self,
         ctx: &AppHandle,
-        task_id: &Uuid,
+        // task_id: &Uuid,
+        task_id: &String,
         args: Option<Value>,
     ) -> anyhow::Result<Option<Value>> {
         match self {

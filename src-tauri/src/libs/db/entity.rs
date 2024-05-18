@@ -2,7 +2,7 @@ use std::fmt;
 
 pub trait EntityTrait {
     fn is_valid(&mut self) -> bool;
-    fn fmt_insert(&mut self) -> &Self;
+    fn fmt_insert(&mut self);
 }
 
 #[derive(Debug)]

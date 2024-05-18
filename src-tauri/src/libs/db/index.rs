@@ -3,13 +3,16 @@ use super::domain::types::Domain;
 use super::entity::{Entity, EntityTrait};
 use super::metadata::types::Metadata;
 use super::proxy::types::Proxy;
-use super::records::types::Records;
+use super::records::types::{Record, Records};
 use anyhow::Result;
+use polodb_core::bson::oid::ObjectId;
 use polodb_core::bson::to_document;
+use polodb_core::bson::{doc, from_document};
 use polodb_core::results::DeleteResult;
 use polodb_core::Collection;
 use polodb_core::{bson::Document, Database};
-use serde::Serialize;
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 use std::sync::{Arc, Mutex};
 
 pub struct DB {
@@ -46,14 +49,16 @@ impl DB {
         Ok(result.inserted_id.to_string())
     }
 
-    pub fn find(&self, entity: Entity, filter: Option<Document>) -> Result<Vec<Document>> {
-        let collection = self.get_collection(entity.name());
-
-        let mut entities = vec![];
-        let result = collection
-            .find(filter.unwrap())?
-            .for_each(|entity| entities.push(entity.unwrap()));
-        Ok(entities)
+    pub fn find<T: DeserializeOwned>(
+        &self,
+        entity: Entity,
+        filter: Option<Document>,
+    ) -> Result<Vec<T>> {
+        Ok(self
+            .get_collection(entity.name())
+            .find(filter.unwrap_or(doc! {}))?
+            .map(|entity| from_document::<T>(entity.unwrap()).unwrap())
+            .collect::<Vec<T>>())
     }
 
     pub fn update_one(&self, entity: Entity, filter: Document, update: Document) -> Result<u64> {

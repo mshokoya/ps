@@ -1,15 +1,16 @@
 use chromiumoxide::cdp::browser_protocol::network::CookieParam;
+use polodb_core::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
-use uuid::Uuid;
+// use uuid::Uuid;
 
 use crate::libs::db::entity::EntityTrait;
 
-#[derive(TS)]
-#[ts(export)]
-#[derive(Debug, Serialize)]
+// #[derive(TS)]
+// #[ts(export)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Account {
-    pub _id: String,
+    pub _id: ObjectId,
     pub domain: String, // enum Domain
     pub trial_time: Option<u64>,
     pub suspended: bool,
@@ -31,7 +32,7 @@ pub struct Account {
 
 #[derive(TS)]
 #[ts(export)]
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct History {
     pub total_page_scrape: u8,
     pub scrape_time: Option<u64>,
@@ -39,9 +40,9 @@ pub struct History {
     pub scrape_id: String,
 }
 
-#[derive(TS)]
-#[ts(export)]
-#[derive(Debug, Serialize)]
+// #[derive(TS)]
+// #[ts(export)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Cookies(String);
 
 impl Into<Vec<CookieParam>> for Cookies {
@@ -66,7 +67,7 @@ struct CookieParse {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct AccountArg {
-    pub _id: Option<String>,
+    pub _id: Option<ObjectId>,
     pub domain: Option<String>, // enum Domain
     pub trial_time: Option<u64>,
     pub suspended: Option<bool>,
@@ -93,7 +94,7 @@ impl EntityTrait for AccountArg {
         }
         true
     }
-    fn fmt_insert(&mut self) -> &AccountArg {
+    fn fmt_insert(&mut self) {
         // if acc.domain.is_none() {}
         // if acc.account_type.is_none() {
         //     acc.account_type = "free"
@@ -154,8 +155,6 @@ impl EntityTrait for AccountArg {
         if self.history.is_none() {
             self.history = Some(vec![]);
         }
-
-        self
     }
 }
 
@@ -166,3 +165,78 @@ pub struct HistoryArg {
     pub list_name: Option<String>,
     pub scrape_id: Option<String>,
 }
+
+// macro_rules! impl_drawable {
+//     ($t:ty) => {
+//         impl EntityTrait for $t {
+//             fn is_valid(&mut self) -> bool {
+//                 // if self.email.is_none() || self.password.is_none() {
+//                 //     return false;
+//                 // }
+//                 true
+//             }
+//             fn fmt_insert(&mut self) {
+//                 // if acc.domain.is_none() {}
+//                 // if acc.account_type.is_none() {
+//                 //     acc.account_type = "free"
+//                 // }
+
+//                 if self.trial_time.is_none() {
+//                     self.trial_time = None;
+//                 }
+
+//                 if self.suspended.is_none() {
+//                     self.suspended = Some(false);
+//                 }
+
+//                 if self.login_type.is_none() {
+//                     self.login_type = Some("default".to_string());
+//                 }
+
+//                 if self.verified.is_none() {
+//                     self.verified = Some(false);
+//                 }
+
+//                 if self.proxy.is_none() {
+//                     self.proxy = None;
+//                 }
+
+//                 if self.credits_used.is_none() {
+//                     self.credits_used = None;
+//                 }
+
+//                 if self.credit_limit.is_none() {
+//                     self.credit_limit = None;
+//                 }
+
+//                 if self.renewal_date.is_none() {
+//                     self.renewal_date = None;
+//                 }
+
+//                 if self.renewal_start_date.is_none() {
+//                     self.renewal_start_date = None;
+//                 }
+
+//                 if self.renewal_end_date.is_none() {
+//                     self.renewal_end_date = None;
+//                 }
+
+//                 if self.trial_days_left.is_none() {
+//                     self.trial_days_left = None;
+//                 }
+
+//                 if self.last_used.is_none() {
+//                     self.last_used = None;
+//                 }
+
+//                 if self.cookies.is_none() {
+//                     self.cookies = None;
+//                 }
+
+//                 if self.history.is_none() {
+//                     self.history = Some(vec![]);
+//                 }
+//             }
+//         }
+//     };
+// }
