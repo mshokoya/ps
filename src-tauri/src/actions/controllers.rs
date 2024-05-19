@@ -1,9 +1,11 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use tauri::AppHandle;
 // use uuid::Uuid;
 
-use crate::libs::{db::accounts::types::AccountArg, taskqueue::types::TQTimeout};
+use crate::libs::{
+    db::accounts::types::AccountArg,
+    taskqueue::types::{TQTimeout, TaskActionCTX},
+};
 
 use super::apollo::confirm::index::apollo_check;
 
@@ -49,13 +51,11 @@ pub enum TaskType {
 impl TaskType {
     pub async fn exec(
         &self,
-        ctx: &AppHandle,
-        // task_id: &Uuid,
-        task_id: &String,
+        ctx: TaskActionCTX,
         args: Option<Value>,
     ) -> anyhow::Result<Option<Value>> {
         match self {
-            TaskType::ApolloCheck => apollo_check(ctx, task_id, args).await,
+            TaskType::ApolloCheck => apollo_check(ctx, args).await,
             _ => Ok(None),
         }
     }

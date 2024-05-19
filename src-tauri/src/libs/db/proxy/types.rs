@@ -1,8 +1,9 @@
+use polodb_core::bson::oid::ObjectId;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
 pub struct Proxy {
-    _id: String,
+    _id: ObjectId,
     proxy: String,
     protocol: String,
     host: String,
@@ -10,7 +11,7 @@ pub struct Proxy {
 }
 
 pub struct ProxyArg {
-    _id: Option<String>,
+    _id: Option<ObjectId>,
     proxy: Option<String>,
     protocol: Option<String>,
     host: Option<String>,

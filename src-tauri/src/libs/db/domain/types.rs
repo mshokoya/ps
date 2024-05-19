@@ -1,11 +1,12 @@
+use polodb_core::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-#[derive(TS)]
-#[ts(export)]
+// #[derive(TS)]
+// #[ts(export)]
 #[derive(Debug, Serialize)]
 pub struct Domain {
-    pub _id: String,
+    pub _id: ObjectId,
     pub domain: String,
     verified: bool,
     mx_records: bool,
@@ -19,7 +20,7 @@ pub struct Domain {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct DomainArg {
-    pub _id: Option<String>,
+    pub _id: Option<ObjectId>,
     pub domain: Option<String>,
     verified: Option<bool>,
     mx_records: Option<bool>,

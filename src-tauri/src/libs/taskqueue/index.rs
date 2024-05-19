@@ -1,12 +1,13 @@
 use crate::actions::controllers::TaskType;
 use async_std::task::{sleep, spawn};
+use polodb_core::bson::Uuid;
 use std::collections::VecDeque;
 use std::sync::Mutex;
 use std::time::Duration;
 use tauri::{AppHandle, Manager};
 // use String::String;
 
-use super::types::{ActionData, Channels, Process, Task, TaskEvent};
+use super::types::{ActionData, Channels, Process, Task, TaskActionCTX, TaskEvent};
 
 #[derive(Debug)]
 pub struct TaskQueue {
@@ -105,7 +106,7 @@ impl TaskQueue {
         self.exec();
     }
 
-    pub fn p_dequeue(&self, task_id: &String) {
+    pub fn p_dequeue(&self, task_id: &Uuid) {
         let ps = remove_process(&self.process_queue, task_id).unwrap();
         let mut task = ps.task.clone();
 
@@ -225,16 +226,22 @@ impl TaskQueue {
         };
         drop(pq);
 
-        let ctx = self.app_handle.clone();
+        let handle = self.app_handle.clone();
         let tsk_cln = task.clone();
 
         let ps = spawn(async move {
-            ctx.state::<TaskQueue>().p_dequeue(&tsk_cln.task_id);
             let mut ok: bool = false;
             let mut message = "removed completed task from queue".to_string();
             let metadata = match tsk_cln
                 .task_type
-                .exec(&ctx, &tsk_cln.task_id, tsk_cln.args)
+                .exec(
+                    TaskActionCTX {
+                        handle: handle.clone(),
+                        task_id: tsk_cln.task_id,
+                        page: None,
+                    },
+                    tsk_cln.args,
+                )
                 .await
             {
                 Ok(val) => {
@@ -248,22 +255,25 @@ impl TaskQueue {
                 }
             };
 
-            ctx.emit(
-                Channels::ProcessQueue.into(),
-                TaskEvent {
-                    task_id: &tsk_cln.task_id,
-                    message,
-                    ok: Some(ok),
-                    task_type: TaskType::Enqueue,
-                    metadata: &tsk_cln.metadata,
-                    action_data: ActionData {
-                        task_group: &tsk_cln.task_group,
-                        task_type: &tsk_cln.task_type,
-                        metadata,
+            handle.state::<TaskQueue>().p_dequeue(&tsk_cln.task_id);
+
+            handle
+                .emit(
+                    Channels::ProcessQueue.into(),
+                    TaskEvent {
+                        task_id: &tsk_cln.task_id,
+                        message,
+                        ok: Some(ok),
+                        task_type: TaskType::Enqueue,
+                        metadata: &tsk_cln.metadata,
+                        action_data: ActionData {
+                            task_group: &tsk_cln.task_group,
+                            task_type: &tsk_cln.task_type,
+                            metadata,
+                        },
                     },
-                },
-            )
-            .unwrap();
+                )
+                .unwrap();
         });
 
         let mut pq = self.process_queue.lock().unwrap();
@@ -273,13 +283,13 @@ impl TaskQueue {
     }
 }
 
-fn remove_task(queue: &Mutex<VecDeque<Task>>, task_id: &String) -> Option<Task> {
+fn remove_task(queue: &Mutex<VecDeque<Task>>, task_id: &Uuid) -> Option<Task> {
     let mut tq = queue.lock().unwrap();
     let idx = tq.iter().position(|t| t.task_id == *task_id).unwrap_or(225);
     tq.swap_remove_back(idx)
 }
 
-fn remove_process(queue: &Mutex<VecDeque<Process>>, task_id: &String) -> Option<Process> {
+fn remove_process(queue: &Mutex<VecDeque<Process>>, task_id: &Uuid) -> Option<Process> {
     let mut pq = queue.lock().unwrap();
     let idx = pq
         .iter()

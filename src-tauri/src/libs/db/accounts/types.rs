@@ -19,8 +19,8 @@ pub struct Account {
     pub email: String,
     pub password: String,
     pub proxy: String,
-    pub credits_used: Option<i16>,
-    pub credit_limit: Option<i16>,
+    pub credits_used: Option<u16>,
+    pub credit_limit: Option<u16>,
     pub renewal_date: Option<u64>,
     pub renewal_start_date: Option<u64>,
     pub renewal_end_date: Option<u64>,
@@ -30,14 +30,14 @@ pub struct Account {
     pub history: Vec<History>,
 }
 
-#[derive(TS)]
-#[ts(export)]
+// #[derive(TS)]
+// #[ts(export)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct History {
     pub total_page_scrape: u8,
     pub scrape_time: Option<u64>,
     pub list_name: String,
-    pub scrape_id: String,
+    pub scrape_id: ObjectId,
 }
 
 // #[derive(TS)]
@@ -163,7 +163,7 @@ pub struct HistoryArg {
     pub total_page_scrape: Option<u8>,
     pub scrape_time: Option<u64>,
     pub list_name: Option<String>,
-    pub scrape_id: Option<String>,
+    pub scrape_id: Option<ObjectId>,
 }
 
 // macro_rules! impl_drawable {

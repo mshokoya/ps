@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use polodb_core::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 // use ts_rs::TS;
@@ -17,7 +18,7 @@ use serde_json::Value;
 // #[ts(export)]
 #[derive(Debug, Serialize)]
 pub struct Metadata {
-    _id: String,
+    _id: ObjectId,
     url: String,
     params: HashMap<String, Value>,
     name: String,
@@ -29,7 +30,7 @@ pub struct Metadata {
 // #[ts(export)]
 #[derive(Debug, Serialize)]
 pub struct Accounts {
-    account_id: String,
+    account_id: ObjectId,
     range: [u32; 2],
 }
 
@@ -37,7 +38,7 @@ pub struct Accounts {
 // #[ts(export)]
 #[derive(Debug, Serialize)]
 pub struct Scrapes {
-    scrape_id: String,
+    scrape_id: ObjectId,
     list_name: String,
     length: u8,
     data: u64,
@@ -49,7 +50,7 @@ pub struct Scrapes {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct MetadataArg {
-    pub _id: Option<String>,
+    pub _id: Option<ObjectId>,
     pub domain: Option<String>,
     verified: Option<bool>,
     mx_records: Option<bool>,
@@ -59,13 +60,13 @@ pub struct MetadataArg {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct AccountsArg {
-    account_id: String,
+    account_id: ObjectId,
     range: [u32; 2],
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ScrapesArg {
-    scrape_id: String,
+    scrape_id: ObjectId,
     list_name: String,
     length: u8,
     data: u64,

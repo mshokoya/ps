@@ -1,2 +1,2 @@
 pub mod confirm;
-// pub mod lib;
+pub mod lib;
