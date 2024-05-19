@@ -5,7 +5,7 @@ use polodb_core::bson::{doc, Uuid};
 use serde_json::Value;
 use tauri::{AppHandle, Manager};
 
-use crate::actions::apollo::lib::index::apollo_login_credits_info;
+use crate::actions::apollo::lib::index::{apollo_login_credits_info, log_into_apollo_then_visit};
 use crate::libs::taskqueue::types::Channels;
 use crate::{
     actions::controllers::{Response as R, TaskType},
@@ -66,12 +66,12 @@ pub async fn apollo_check(
 
     ctx.page = Some(unsafe { SCRAPER.incog().await? });
 
-    // apollo_login_then_visit(
-    //     ctx,
-    //     &account,
-    //     "https://app.apollo.io/#/settings/credits/current",
-    // )
-    // .await;
+    log_into_apollo_then_visit(
+        &ctx,
+        &account,
+        "https://app.apollo.io/#/settings/credits/current",
+    )
+    .await;
 
     ctx.handle
         .emit(

@@ -42,7 +42,7 @@ pub struct History {
 
 // #[derive(TS)]
 // #[ts(export)]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Cookies(String);
 
 impl Into<Vec<CookieParam>> for Cookies {
