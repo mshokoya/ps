@@ -37,30 +37,6 @@ pub fn check_task(ctx: AppHandle, args: Value) -> Value {
         None => return R::<()>::fail_none(),
     };
 
-    // ctx.state::<DB>().insert_one::<AccountArg>(
-    //     Entity::Account,
-    //     AccountArg {
-    //         _id: None,
-    //         domain: Some("genzcompany.live".to_string()), // enum Domain
-    //         trial_time: Some(342),
-    //         suspended: Some(false),
-    //         login_type: Some("test value login_type".to_string()), // enum
-    //         verified: Some(true),
-    //         email: Some("tessa@genzcompany.live".to_string()),
-    //         password: Some("mannyman17".to_string()),
-    //         proxy: Some("test value proxy".to_string()),
-    //         credits_used: Some(6),
-    //         credit_limit: Some(342),
-    //         renewal_date: Some("jhjgf".to_string()),
-    //         renewal_start_date: Some("jhgjf".to_string()),
-    //         renewal_end_date: Some("jhgjf".to_string()),
-    //         trial_days_left: Some("jhgjf".to_string()),
-    //         last_used: Some(342),
-    //         cookies: None,
-    //         history: None,
-    //     },
-    // );
-
     ctx.state::<TaskQueue>().w_enqueue(Task {
         task_id: Uuid::new(),
         task_type: TaskType::ApolloCheck,
@@ -118,45 +94,3 @@ pub async fn apollo_check(
 
     Ok(Some(to_value(update)?))
 }
-
-// page.goto("https://crates.io/search?q=chromium&sort=downloads")
-//     .await?
-//     .goto("https://www.youtube.com")
-//     .await?
-//     .goto("https://dash.cloudflare.com/login")
-//     .await?
-//     .goto("https://profy.dev/project/react-job-simulator/welcome")
-//     .await?
-//     .goto("https://www.youtube.com/watch?v=Ahwoks_dawU")
-//     .await?
-//     .goto("https://docs.rs/chromiumoxide/0.5.0/chromiumoxide/handler/struct.Handler.html#method.try_poll_next")
-//     .await?
-//     .goto("https://www.game.com")
-//     .await?
-//     .goto("https://www.sitelike.org/similar/downduck.com/")
-//     .await?;
-
-// Ok(Some(
-//     serde_json::to_value(AccountArg {
-//         // _id: Some(Uuid::new_v4()),
-//         _id: Some(ObjectId::parse_str("66477168cf323e7729dc753f").unwrap()),
-//         domain: Some("test value domain".to_string()), // enum Domain
-//         trial_time: Some(342),
-//         suspended: Some(false),
-//         login_type: Some("test value login_type".to_string()), // enum
-//         verified: Some(true),
-//         email: Some("test value email".to_string()),
-//         password: Some("test value password".to_string()),
-//         proxy: Some("test value proxy".to_string()),
-//         credits_used: Some(342),
-//         credit_limit: Some(342),
-//         renewal_date: Some(342),
-//         renewal_start_date: Some(342),
-//         renewal_end_date: Some(342),
-//         trial_days_left: Some(342),
-//         last_used: Some(342),
-//         cookies: None,
-//         history: None,
-//     })
-//     .unwrap(),
-// ))
