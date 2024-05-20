@@ -1,6 +1,4 @@
-use std::sync::Arc;
-
-use anyhow::Error;
+use anyhow::Result;
 use polodb_core::bson::{doc, to_document, Uuid};
 use serde_json::{to_value, Value};
 use tauri::{AppHandle, Manager};
@@ -11,10 +9,9 @@ use crate::{
     actions::controllers::{Response as R, TaskType},
     libs::{
         db::{
-            accounts::types::{Account, AccountArg},
+            accounts::types::{Account},
             entity::Entity,
             index::DB,
-            records::types::{Record, RecordArg, Records, RecordsArg},
         },
         taskqueue::{
             index::TaskQueue,
@@ -80,7 +77,7 @@ pub fn check_task(ctx: AppHandle, args: Value) -> Value {
 pub async fn apollo_check(
     mut ctx: TaskActionCTX,
     args: Option<Value>,
-) -> Result<Option<Value>, Error> {
+) -> Result<Option<Value>> {
     let args: ApolloCheckArgs = serde_json::from_value(args.unwrap())?;
     let db = ctx.handle.state::<DB>();
 

@@ -215,6 +215,7 @@ impl TaskQueue {
     // }
 
     fn exec(&self) {
+        println!("WE IN DA TASK");
         let pq = self.process_queue.lock().unwrap();
         let pq_len = pq.len();
         if pq_len >= self.max_processes.into() {
@@ -276,10 +277,7 @@ impl TaskQueue {
                 .unwrap();
         });
 
-        let mut pq = self.process_queue.lock().unwrap();
-        pq.push_back(Process { task, ps });
-        drop(pq);
-        self.exec();
+        self.p_enqueue(Process { task, ps });
     }
 }
 

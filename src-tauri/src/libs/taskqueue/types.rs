@@ -50,8 +50,8 @@ pub struct ActionData<'a> {
 
 #[derive(Clone, Copy, Serialize, Debug)]
 pub enum TaskGroup {
-    Enqueue,
-    Dequeue,
+    // Enqueue,
+    // Dequeue,
     Apollo,
 }
 
@@ -85,7 +85,7 @@ impl Drop for TaskActionCTX {
         if let Some(page) = &self.page {
             let pg = page.clone();
             spawn(async {
-                pg.close().await;
+                let _ = pg.close().await;
             });
         }
     }
