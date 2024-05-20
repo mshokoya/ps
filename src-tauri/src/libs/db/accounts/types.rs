@@ -21,14 +21,19 @@ pub struct Account {
     pub proxy: String,
     pub credits_used: Option<u16>,
     pub credit_limit: Option<u16>,
-    pub renewal_date: Option<u64>,
-    pub renewal_start_date: Option<u64>,
-    pub renewal_end_date: Option<u64>,
-    pub trial_days_left: Option<u64>,
+    pub renewal_date: Option<String>,
+    pub renewal_start_date: Option<String>,
+    pub renewal_end_date: Option<String>,
+    pub trial_days_left: Option<String>,
     pub last_used: Option<u64>,
     pub cookies: Option<Cookies>,
     pub history: Vec<History>,
 }
+
+// pub renewal_date: Option<u64>,
+// pub renewal_start_date: Option<u64>,
+// pub renewal_end_date: Option<u64>,
+// pub trial_days_left: Option<u64>,
 
 // #[derive(TS)]
 // #[ts(export)]
@@ -78,10 +83,10 @@ pub struct AccountArg {
     pub proxy: Option<String>,
     pub credits_used: Option<u16>,
     pub credit_limit: Option<u16>,
-    pub renewal_date: Option<u64>,
-    pub renewal_start_date: Option<u64>,
-    pub renewal_end_date: Option<u64>,
-    pub trial_days_left: Option<u64>,
+    pub renewal_date: Option<String>,
+    pub renewal_start_date: Option<String>,
+    pub renewal_end_date: Option<String>,
+    pub trial_days_left: Option<String>,
     pub last_used: Option<u64>,
     pub cookies: Option<String>,
     pub history: Option<Vec<HistoryArg>>,
