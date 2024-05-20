@@ -1,6 +1,4 @@
-use std::sync::Arc;
-
-use async_std::task::JoinHandle;
+use async_std::task::{spawn, JoinHandle};
 use chromiumoxide::Page;
 use polodb_core::bson::Uuid;
 use serde::{Deserialize, Serialize};
@@ -80,4 +78,15 @@ pub struct TaskActionCTX {
     pub handle: AppHandle,
     pub page: Option<Page>,
     pub task_id: Uuid,
+}
+
+impl Drop for TaskActionCTX {
+    fn drop(&mut self) {
+        if let Some(page) = &self.page {
+            let pg = page.clone();
+            spawn(async {
+                pg.close().await;
+            });
+        }
+    }
 }

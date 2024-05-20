@@ -1,8 +1,7 @@
-use std::{str::FromStr, time::Duration};
+use std::time::Duration;
 
 use anyhow::{anyhow, Context, Error, Result};
 use async_std::task::sleep;
-use chromiumoxide::{cdp::js_protocol::runtime::EvaluateParams, page};
 use polodb_core::bson::doc;
 use tauri::Manager;
 
@@ -21,7 +20,7 @@ pub async fn log_into_apollo(ctx: &TaskActionCTX, account: &Account) -> Result<(
 
     // save_cookies(ctx.page.unwrap(), account).await
 
-    todo!()
+    Ok(())
 }
 
 pub async fn log_into_apollo_then_visit(
@@ -33,8 +32,13 @@ pub async fn log_into_apollo_then_visit(
 
     // == seprate func
     inject_cookies(&page, &account.cookies).await?;
-    page.goto(url).await?;
+
+    page.goto(url).await?.wait_for_navigation_response().await?;
+
+    sleep(Duration::from_secs(5)).await;
+
     let url = page.url().await?.unwrap();
+
     if url.contains("#/login") {
         log_into_apollo(ctx, account).await?;
     }
@@ -46,8 +50,6 @@ pub async fn log_into_apollo_then_visit(
         )
         .unwrap();
 
-    page.goto(url).await?.wait_for_navigation_response().await?;
-
     Ok(())
 }
 
@@ -58,9 +60,12 @@ pub async fn apollo_default_login(ctx: &TaskActionCTX, account: &Account) -> Res
     let incorrect_logins_selector = String::from(r#"[class="zp_nFR11"]"#);
     let empty_fields_selector = String::from(r#"[class="error-label zp_HeV9x"]"#);
 
-    page.goto("https://app.apollo.io/#/login").await?;
+    let url = page.url().await?.unwrap();
+    if !url.contains("#/login") {
+        page.goto("https://app.apollo.io/#/login").await?;
+    }
 
-    let submit_button = wait_for_selector(&page, login_button_selector.as_str(), 5, 2)
+    let submit_button = wait_for_selector(&page, login_button_selector.as_str(), 5, 5)
         .await
         .with_context(|| "[Error - apollo_default_login]: Failed to find login_button_selector")?;
 
@@ -77,12 +82,16 @@ pub async fn apollo_default_login(ctx: &TaskActionCTX, account: &Account) -> Res
     login_fields
         .get(0)
         .unwrap()
+        .click()
+        .await?
         .type_str(&account.email)
         .await?;
 
     login_fields
         .get(1)
         .unwrap()
+        .click()
+        .await?
         .type_str(&account.password)
         .await?;
 
@@ -120,6 +129,7 @@ pub async fn apollo_login_credits_info(
     account: &Account,
 ) -> Result<CreditsInfo> {
     let page = ctx.page.as_ref().unwrap();
+
     if wait_for_selector(page, r#"div[class="zp_ajv0U"]"#, 5, 2)
         .await
         .is_err()
@@ -130,64 +140,45 @@ pub async fn apollo_login_credits_info(
     };
 
     let credits_evaluate: CreditsEval = page
-        .evaluate_expression(
+        .evaluate_function(
             r#"
-          const emailCreditInfo: any = document.querySelectorAll('div[class="zp_ajv0U"]')
-          if (!emailCreditInfo && emailCreditInfo.length < 2) return null
-
-          const renewalDate = document.querySelector('[class="zp_SJzex"]')
-          if (!renewalDate) return null
-          if (!renewalDate.lastChild) return null
-
-          const renewalStartEnd = document.querySelector('[class="zp_kQfcf"]')
-          if (!renewalStartEnd) return null
-
-          const trialDaysLeft = document.querySelector('[class="zp_EanJu"]')
-
-          return {
-            email_credit_info: emailCreditInfo[1].innerText as string,
-            renewal_date: renewalDate.lastChild.innerText as string,
-            renewal_start_end: renewalStartEnd.innerText as string,
-            trial_days_left: trialDaysLeft ? trialDaysLeft.innerText : null
-          }
+            async () => {
+                const emailCreditInfo = document.querySelectorAll('div[class="zp_ajv0U"]')
+      
+                const renewalDate = document.querySelector('[class="zp_SJzex"]')
+      
+                const renewalStartEnd = document.querySelector('[class="zp_kQfcf"]')
+      
+                const trialDaysLeft = document.querySelector('[class="zp_EanJu"]')
+      
+                return {
+                  email_credits_info: emailCreditInfo[1].innerText,
+                  renewal_date: renewalDate.innerText,
+                  renewal_start_end: renewalStartEnd.innerText,
+                  trial_days_left: trialDaysLeft ? trialDaysLeft.innerText : null
+                }
+            }
         "#,
         )
         .await?
         .into_value()?;
 
-    println!("CREDITS EVAL");
-    println!("{:?}", &credits_evaluate);
-
     let credits_info: Vec<&str> = credits_evaluate.email_credits_info.split(' ').collect();
-    println!("CREDITS Info");
-    println!("{:?}", &credits_info);
     let credits_used = credits_info[0].parse::<u16>()?;
-    println!("Email email credits used");
-    println!("{:?}", &credits_used);
     let credits_limit = credits_info[2].replace(",", "").parse::<u16>()?;
-    println!("credits_limit");
-    println!("{:?}", &credits_limit);
     let renewal_date = credits_evaluate
         .renewal_date
         .split(':')
         .collect::<Vec<&str>>()[1]
         .trim()
         .to_string();
-    println!("renewal_date_time");
-    println!("{:?}", &renewal_date);
     let renewal_start_end: Vec<String> = credits_evaluate
         .renewal_start_end
         .split('-')
         .map(|s| s.to_owned())
         .collect();
-    println!("renewal_start_end");
-    println!("{:?}", &renewal_start_end);
     let renewal_start_date: String = renewal_start_end[0].trim().to_owned();
-    println!("renewal_start_date");
-    println!("{:?}", &renewal_start_date);
     let renewal_end_date: String = renewal_start_end[1].trim().to_owned();
-    println!("renewal_end_date");
-    println!("{:?}", &renewal_end_date);
 
     Ok(CreditsInfo {
         credits_used,

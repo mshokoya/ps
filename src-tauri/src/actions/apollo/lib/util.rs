@@ -9,24 +9,27 @@ use uuid::Uuid;
 use crate::libs::db::accounts::types::Cookies;
 
 // ===== Apollo Error ======
-#[derive(Debug)]
-pub struct ApolloError {
-    task_id: Uuid,
-    message: &'static str,
-}
-impl ApolloError {
-    pub fn new(task_id: Uuid, message: &str) -> Self {
-        ApolloError { task_id, message }
-    }
-}
+// #[derive(Debug)]
+// pub struct ApolloError {
+//     task_id: Uuid,
+//     message: &'static str,
+// }
+// impl ApolloError {
+//     pub fn new(task_id: Uuid, message: &str) -> Self {
+//         ApolloError {
+//             task_id,
+//             message,
+//         }
+//     }
+// }
 
-impl std::error::Error for ApolloError {}
+// impl std::error::Error for ApolloError {}
 
-impl std::fmt::Display for ApolloError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "[ApolloError]: {}", self.message)
-    }
-}
+// impl std::fmt::Display for ApolloError {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         write!(f, "[ApolloError]: {}", self.message)
+//     }
+// }
 // ==========================
 //
 // =======================
@@ -90,8 +93,8 @@ pub async fn wait_for_selector(
 ) -> Result<Element> {
     let selector: String = selector.into();
     while interval > 0 {
-        println!("func {} - interval {}", "wait_for_selector", interval);
         let el: Option<Element> = page.find_element(&selector).await.ok();
+        
         if el.is_some() {
             return Ok(el.unwrap());
         }

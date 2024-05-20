@@ -33,6 +33,8 @@ impl Scraper {
     }
 
     pub async fn incog(&mut self) -> Result<Page, CdpError> {
+        // page.disable_log().await?.disable_debugger().await?;
+        //     page.enable_stealth_mode().await?;
         let ctx = self
             .browser
             .as_mut()

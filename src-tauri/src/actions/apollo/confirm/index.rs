@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use anyhow::Error;
 use polodb_core::bson::{doc, to_document, Uuid};
-use serde_json::Value;
+use serde_json::{to_value, Value};
 use tauri::{AppHandle, Manager};
 
 use crate::actions::apollo::lib::index::{apollo_login_credits_info, log_into_apollo_then_visit};
@@ -40,39 +40,39 @@ pub fn check_task(ctx: AppHandle, args: Value) -> Value {
         None => return R::<()>::fail_none(),
     };
 
-    ctx.state::<DB>().insert_one::<AccountArg>(
-        Entity::Account,
-        AccountArg {
-            _id: None,
-            domain: Some("test value domain".to_string()), // enum Domain
-            trial_time: Some(342),
-            suspended: Some(false),
-            login_type: Some("test value login_type".to_string()), // enum
-            verified: Some(true),
-            email: Some("test value email".to_string()),
-            password: Some("test value password".to_string()),
-            proxy: Some("test value proxy".to_string()),
-            credits_used: Some(6),
-            credit_limit: Some(342),
-            renewal_date: Some("jhjgf".to_string()),
-            renewal_start_date: Some("jhgjf".to_string()),
-            renewal_end_date: Some("jhgjf".to_string()),
-            trial_days_left: Some("jhgjf".to_string()),
-            last_used: Some(342),
-            cookies: None,
-            history: None,
-        },
-    );
+    // ctx.state::<DB>().insert_one::<AccountArg>(
+    //     Entity::Account,
+    //     AccountArg {
+    //         _id: None,
+    //         domain: Some("genzcompany.live".to_string()), // enum Domain
+    //         trial_time: Some(342),
+    //         suspended: Some(false),
+    //         login_type: Some("test value login_type".to_string()), // enum
+    //         verified: Some(true),
+    //         email: Some("tessa@genzcompany.live".to_string()),
+    //         password: Some("mannyman17".to_string()),
+    //         proxy: Some("test value proxy".to_string()),
+    //         credits_used: Some(6),
+    //         credit_limit: Some(342),
+    //         renewal_date: Some("jhjgf".to_string()),
+    //         renewal_start_date: Some("jhgjf".to_string()),
+    //         renewal_end_date: Some("jhgjf".to_string()),
+    //         trial_days_left: Some("jhgjf".to_string()),
+    //         last_used: Some(342),
+    //         cookies: None,
+    //         history: None,
+    //     },
+    // );
 
-    // ctx.state::<TaskQueue>().w_enqueue(Task {
-    //     task_id: Uuid::new(),
-    //     task_type: TaskType::ApolloCheck,
-    //     task_group: TaskGroup::Apollo,
-    //     message: "Getting credits",
-    //     metadata,
-    //     timeout,
-    //     args: fmt_args,
-    // });
+    ctx.state::<TaskQueue>().w_enqueue(Task {
+        task_id: Uuid::new(),
+        task_type: TaskType::ApolloCheck,
+        task_group: TaskGroup::Apollo,
+        message: "Getting credits",
+        metadata,
+        timeout,
+        args: fmt_args,
+    });
 
     R::<()>::ok_none()
 }
@@ -95,7 +95,7 @@ pub async fn apollo_check(
         &account,
         "https://app.apollo.io/#/settings/credits/current",
     )
-    .await;
+    .await?;
 
     ctx.handle
         .emit(
@@ -109,8 +109,8 @@ pub async fn apollo_check(
     db.update_one(
         Entity::Account,
         doc! {"_id": account._id},
-        to_document(&update)?,
-    );
+        doc! {"$set": to_document(&update)?},
+    )?;
 
     ctx.handle
         .emit(
@@ -119,8 +119,7 @@ pub async fn apollo_check(
         )
         .unwrap();
 
-    todo!()
-    // Ok(Some(to_value(doc!({"":""}))))
+    Ok(Some(to_value(update)?))
 }
 
 // page.goto("https://crates.io/search?q=chromium&sort=downloads")

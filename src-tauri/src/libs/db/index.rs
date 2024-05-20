@@ -42,10 +42,9 @@ impl DB {
     pub fn insert_one<T: EntityTrait + Serialize>(&self, entity: Entity, doc: T) -> Result<String> {
         let doc = entity.validate(doc).unwrap();
         let collection = self.get_collection(entity.name());
-
         let doc = to_document(&doc).unwrap();
         let result = collection.insert_one(doc)?;
-        println!("{:?}", result);
+
         Ok(result.inserted_id.to_string())
     }
 

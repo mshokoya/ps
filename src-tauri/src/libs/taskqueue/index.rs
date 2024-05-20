@@ -283,11 +283,11 @@ impl TaskQueue {
     }
 }
 
-fn remove_task(queue: &Mutex<VecDeque<Task>>, task_id: &Uuid) -> Option<Task> {
-    let mut tq = queue.lock().unwrap();
-    let idx = tq.iter().position(|t| t.task_id == *task_id).unwrap_or(225);
-    tq.swap_remove_back(idx)
-}
+// fn remove_task(queue: &Mutex<VecDeque<Task>>, task_id: &Uuid) -> Option<Task> {
+//     let mut tq = queue.lock().unwrap();
+//     let idx = tq.iter().position(|t| t.task_id == *task_id).unwrap_or(225);
+//     tq.swap_remove_back(idx)
+// }
 
 fn remove_process(queue: &Mutex<VecDeque<Process>>, task_id: &Uuid) -> Option<Process> {
     let mut pq = queue.lock().unwrap();

@@ -32,10 +32,10 @@ function App() {
   const handleDemine = () => {
     invoke("check_task", {
       args: {
-        account_id: "67e55044-10b1-426f-9247-bb680e5fe0c8",
+        account_id: "664b69744bb5d236bf4308df",
         timeout: {
           time: 5000,
-          rounds: 2,
+          rounds: 1,
         },
       },
     });
