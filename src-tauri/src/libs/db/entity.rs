@@ -1,8 +1,10 @@
 use std::fmt;
 
+use polodb_core::bson::Document;
+
 pub trait EntityTrait {
     fn is_valid(&mut self) -> bool;
-    fn fmt_insert(&mut self);
+    fn fmt_insert(&mut self) -> Document;
 }
 
 #[derive(Debug)]
@@ -27,14 +29,14 @@ pub enum Entity {
 }
 
 impl Entity {
-    pub fn validate<T: EntityTrait>(&self, mut arg: T) -> anyhow::Result<T, EntityError> {
+    pub fn validate<T: EntityTrait>(&self, mut arg: T) -> anyhow::Result<Document, EntityError> {
         if arg.is_valid() == false {
             return Err(EntityError);
         }
 
-        arg.fmt_insert();
+        let doc = arg.fmt_insert();
 
-        Ok(arg)
+        Ok(doc)
     }
 
     pub fn name(self) -> &'static str {

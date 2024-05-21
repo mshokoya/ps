@@ -4,8 +4,7 @@ use serde_json::Value;
 // use uuid::Uuid;
 
 use crate::libs::{
-    db::accounts::types::AccountArg,
-    taskqueue::types::{TQTimeout, TaskActionCTX},
+    db::accounts::types::AccountArg, taskqueue::types::{TQTimeout, TaskActionCTX}
 };
 
 use super::apollo::check::index::apollo_check;
@@ -14,7 +13,7 @@ use super::apollo::check::index::apollo_check;
 pub struct Response {
     pub ok: bool,
     pub message: Option<String>,
-    pub data: Option<Document>,
+    pub data: Option<Value>,
 }
 
 impl Response {
@@ -26,7 +25,7 @@ impl Response {
         }
     }
 
-    pub fn ok_data(data: Document ) -> Self {
+    pub fn ok_data(data: Value) -> Self {
         Response{
             ok: true,
             message: None,

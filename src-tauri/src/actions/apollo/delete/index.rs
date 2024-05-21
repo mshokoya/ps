@@ -1,5 +1,5 @@
-use polodb_core::bson::{to_document, doc};
-use serde_json::Value;
+use polodb_core::bson::{doc, to_bson};
+use serde_json::{to_value, Value};
 use tauri::{AppHandle, Manager};
 
 use crate::{
@@ -13,10 +13,15 @@ use crate::{
 
 
 #[tauri::command]
-pub fn delete_accounts(ctx: AppHandle, args: Value) -> R {
-  let args = doc! {"$or": to_document(&args).unwrap() };
-  match ctx.state::<DB>().find::<Account>(Entity::Account, Some(args)) {
-    Ok(docs) => R::ok_data(to_document(&docs).unwrap()),
+pub fn delete_accounts(ctx: AppHandle, args: Vec<Value>) -> R {
+  let filter = if args.is_empty() {
+    None
+  } else {
+    Some(doc! { "$or": to_bson(&args).unwrap() })
+  };
+
+  match ctx.state::<DB>().delete::<Account>(Entity::Account, filter) {
+    Ok(docs) => R::ok_data(to_value(&docs).unwrap()),
     Err(_) => R::ok_none()
   }
 }

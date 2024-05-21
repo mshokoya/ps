@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use polodb_core::bson::oid::ObjectId;
+use polodb_core::bson::{oid::ObjectId, to_document, Document};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 // use ts_rs::TS;
@@ -28,7 +28,7 @@ pub struct Metadata {
 
 // #[derive(TS)]
 // #[ts(export)]
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Accounts {
     account_id: ObjectId,
     range: [u32; 2],
@@ -36,7 +36,7 @@ pub struct Accounts {
 
 // #[derive(TS)]
 // #[ts(export)]
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Scrapes {
     scrape_id: ObjectId,
     list_name: String,
@@ -44,58 +44,12 @@ pub struct Scrapes {
     data: u64,
 }
 
-// ==================================
-// =================================
-// ==================================
-
 #[derive(Debug, Deserialize, Serialize)]
 pub struct MetadataArg {
-    pub _id: Option<ObjectId>,
-    pub domain: Option<String>,
-    verified: Option<bool>,
-    mx_records: Option<bool>,
-    txt_records: Option<bool>,
-    message: Option<String>,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct AccountsArg {
-    account_id: ObjectId,
-    range: [u32; 2],
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct ScrapesArg {
-    scrape_id: ObjectId,
-    list_name: String,
-    length: u8,
-    data: u64,
-}
-
-impl MetadataArg {
-    pub fn is_valid(&mut self) -> bool {
-        if self.domain.is_none() {
-            return false;
-        }
-        true
-    }
-    pub fn fmt_insert(&mut self) -> &MetadataArg {
-        if self.verified.is_none() {
-            self.verified = Some(false);
-        }
-
-        if self.mx_records.is_none() {
-            self.mx_records = Some(false);
-        }
-
-        if self.txt_records.is_none() {
-            self.txt_records = Some(false);
-        }
-
-        if self.message.is_none() {
-            self.message = None;
-        }
-
-        self
-    }
+    _id: Option<ObjectId>,
+    url: Option<String>,
+    params: Option<HashMap<String, Value>>,
+    name: Option<String>,
+    scrapes: Option<Vec<Scrapes>>,
+    accounts: Option<Vec<Accounts>>,
 }

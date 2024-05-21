@@ -1,4 +1,5 @@
-use polodb_core::bson::{to_document, Document};
+use polodb_core::bson::{doc, Document, to_bson};
+use serde_json::to_value;
 use tauri::{AppHandle, Manager};
 
 use crate::{
@@ -12,8 +13,8 @@ use crate::{
 
 #[tauri::command]
 pub fn update_account(ctx: AppHandle, filter: Document, update: Document) -> R {
-  match ctx.state::<DB>().update_one(Entity::Account, filter, update) {
-    Ok(docs) => R::ok_data(to_document(&docs).unwrap()),
+  match ctx.state::<DB>().update_one(Entity::Account, filter, doc! { "$set": to_bson(&update).unwrap() }) {
+    Ok(docs) => R::ok_data(to_value(&docs).unwrap()),
     Err(_) => R::ok_none()
   }
 }

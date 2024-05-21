@@ -45,9 +45,12 @@ function App() {
   const handleGet = async () => {
     console.log(
       await invoke("get_accounts", {
-        args: {
-          _id: ["664b69744bb5d236bf4308df"],
-        },
+        args: [
+          // {_id: "664d0d9a09f4ac3e17d1f8b9"}
+          // {_id: "664b68a651295d1dabf2b7b6"},
+          // {_id: "664b69744bb5d236bf4308df"},
+          // {_id: "664c9e44acc1f4695819683c"}
+        ],
       })
     );
   };
@@ -56,14 +59,15 @@ function App() {
   const handleUpdate = async () => {
     console.log(
       await invoke("update_account", {
-        args: {
-          account_id: "664b69744bb5d236bf4308df",
-          timeout: {
-            time: 5000,
-            rounds: 1,
-          },
+          filter: {"_id": "664d0d9809f4ac3e17d1f8b3"},
+          update: {
+            "login_type": "D D DEEE DDDOMAINNZZZ",
+            "password": "LESS ADD A PASSWORDDSA",
+            "proxy": "0:0:0:0:3000",
+            "email": "mayo_s@hotmail.com"
+          }
         },
-      })
+      )
     )
   };
 
@@ -71,13 +75,11 @@ function App() {
   const handleDelete = async () => {
     console.log(
       await invoke("delete_accounts", {
-        args: {
-          account_id: "664b69744bb5d236bf4308df",
-          timeout: {
-            time: 5000,
-            rounds: 1,
-          },
-        },
+        args: [
+          {_id: "664d0d9809f4ac3e17d1f8b0"},
+          {_id: "664d0d9809f4ac3e17d1f8b1"},
+          {_id: "664d0d9809f4ac3e17d1f8b2"},
+        ],
       })
     )
   };
