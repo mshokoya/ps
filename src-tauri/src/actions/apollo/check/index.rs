@@ -58,7 +58,7 @@ pub async fn apollo_check(
     let db = ctx.handle.state::<DB>();
 
     let account = db
-        .find_one::<Account>(Entity::Account, doc! {"_id": args.account_id})
+        .find_one::<Account>(Entity::Account, Some(doc! {"_id": args.account_id}))
         .unwrap();
 
     ctx.page = Some(unsafe { SCRAPER.incog().await? });

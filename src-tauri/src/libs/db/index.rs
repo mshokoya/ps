@@ -11,6 +11,7 @@ use polodb_core::Collection;
 use polodb_core::{bson::Document, Database};
 use serde::de::DeserializeOwned;
 use serde::Serialize;
+use serde_json::Value;
 use std::sync::{Arc, Mutex};
 
 pub struct DB {
@@ -51,19 +52,19 @@ impl DB {
         entity: Entity,
         filter: Option<Document>,
     ) -> Result<Vec<T>> {
+        let filter = filter.unwrap_or(doc!{});
         Ok(self
             .get_collection(entity.name())
-            .find(filter.unwrap_or(doc! {}))?
+            .find(filter)?
             .map(|entity| from_document::<T>(entity.unwrap()).unwrap())
             .collect::<Vec<T>>())
     }
 
-    pub fn find_one<T: DeserializeOwned>(&self, entity: Entity, filter: Document) -> Option<T> {
-        match self.get_collection(entity.name()).find_one(filter).unwrap() {
+    pub fn find_one<T: DeserializeOwned>(&self, entity: Entity, filter: Option<Document>) -> Option<T> {
+        match self.get_collection(entity.name()).find_one(filter.unwrap()).unwrap() {
             Some(doc) => Some(from_document(doc).unwrap()),
             None => None,
         }
-        // Ok()
     }
 
     pub fn update_one(&self, entity: Entity, filter: Document, update: Document) -> Result<u64> {

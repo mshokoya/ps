@@ -46,11 +46,7 @@ function App() {
     console.log(
       await invoke("get_accounts", {
         args: {
-          account_id: "664b69744bb5d236bf4308df",
-          timeout: {
-            time: 5000,
-            rounds: 1,
-          },
+          _id: ["664b69744bb5d236bf4308df"],
         },
       })
     );
