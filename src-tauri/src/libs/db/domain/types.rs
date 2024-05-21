@@ -1,6 +1,5 @@
 use polodb_core::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
 // #[derive(TS)]
 // #[ts(export)]

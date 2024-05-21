@@ -4,12 +4,12 @@ use serde_json::{to_value, Value};
 use tauri::{AppHandle, Manager};
 
 use crate::actions::apollo::lib::index::{apollo_login_credits_info, log_into_apollo_then_visit};
+use crate::libs::db::accounts::types::Account;
 use crate::libs::taskqueue::types::Channels;
 use crate::{
     actions::controllers::{Response as R, TaskType},
     libs::{
         db::{
-            accounts::types::{Account},
             entity::Entity,
             index::DB,
         },
@@ -24,7 +24,7 @@ use crate::{
 use super::types::ApolloCheckArgs;
 
 #[tauri::command]
-pub fn check_task(ctx: AppHandle, args: Value) -> Value {
+pub fn check_task(ctx: AppHandle, args: Value) -> R {
     let to = args.get("timeout").unwrap().to_owned();
     let timeout: Option<TQTimeout> = serde_json::from_value(to).unwrap_or(None);
     let metadata = match args.get("account_id") {
@@ -34,7 +34,7 @@ pub fn check_task(ctx: AppHandle, args: Value) -> Value {
 
     let fmt_args = match args.get("account_id") {
         Some(_) => Some(args.to_owned()),
-        None => return R::<()>::fail_none(),
+        None => return R::fail_none(),
     };
 
     ctx.state::<TaskQueue>().w_enqueue(Task {
@@ -47,7 +47,7 @@ pub fn check_task(ctx: AppHandle, args: Value) -> Value {
         args: fmt_args,
     });
 
-    R::<()>::ok_none()
+    R::ok_none()
 }
 
 pub async fn apollo_check(
@@ -77,7 +77,7 @@ pub async fn apollo_check(
         )
         .unwrap();
 
-    let update = apollo_login_credits_info(&ctx, &account).await?;
+    let update = apollo_login_credits_info(&ctx).await?;
 
     db.update_one(
         Entity::Account,

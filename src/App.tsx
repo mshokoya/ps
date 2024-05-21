@@ -29,7 +29,7 @@ function App() {
     };
   }, []);
 
-  const handleDemine = () => {
+  const handleCheck = () => {
     invoke("check_task", {
       args: {
         account_id: "664b69744bb5d236bf4308df",
@@ -41,9 +41,57 @@ function App() {
     });
   };
 
+
+  const handleGet = async () => {
+    console.log(
+      await invoke("get_accounts", {
+        args: {
+          account_id: "664b69744bb5d236bf4308df",
+          timeout: {
+            time: 5000,
+            rounds: 1,
+          },
+        },
+      })
+    );
+  };
+
+
+  const handleUpdate = async () => {
+    console.log(
+      await invoke("update_account", {
+        args: {
+          account_id: "664b69744bb5d236bf4308df",
+          timeout: {
+            time: 5000,
+            rounds: 1,
+          },
+        },
+      })
+    )
+  };
+
+
+  const handleDelete = async () => {
+    console.log(
+      await invoke("delete_accounts", {
+        args: {
+          account_id: "664b69744bb5d236bf4308df",
+          timeout: {
+            time: 5000,
+            rounds: 1,
+          },
+        },
+      })
+    )
+  };
+
   return (
     <div className="container">
-      <button onClick={() => handleDemine()}></button>
+      <button onClick={() => handleCheck()}>Check</button>
+      <button onClick={() => handleGet()}>Get</button>
+      <button onClick={() => handleUpdate()}>Update</button>
+      <button onClick={() => handleDelete()}>Delete</button>
     </div>
   );
 }

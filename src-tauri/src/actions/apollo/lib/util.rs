@@ -4,7 +4,6 @@ use anyhow::{anyhow, Result};
 use async_std::task;
 use chromiumoxide::{Element, Page};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 
 use crate::libs::db::accounts::types::Cookies;
 

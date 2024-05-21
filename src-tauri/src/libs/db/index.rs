@@ -3,16 +3,14 @@ use super::domain::types::Domain;
 use super::entity::{Entity, EntityTrait};
 use super::metadata::types::Metadata;
 use super::proxy::types::Proxy;
-use super::records::types::{Record, Records};
+use super::records::types::Records;
 use anyhow::Result;
-use polodb_core::bson::oid::ObjectId;
-use polodb_core::bson::to_document;
-use polodb_core::bson::{doc, from_document};
+use polodb_core::bson::{doc, from_document, to_document};
 use polodb_core::results::DeleteResult;
 use polodb_core::Collection;
 use polodb_core::{bson::Document, Database};
 use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use std::sync::{Arc, Mutex};
 
 pub struct DB {
@@ -71,6 +69,16 @@ impl DB {
     pub fn update_one(&self, entity: Entity, filter: Document, update: Document) -> Result<u64> {
         let collection = self.get_collection(entity.name());
         Ok(collection.update_one(filter, update)?.modified_count)
+    }
+
+    pub fn delete<T: DeserializeOwned>(
+        &self,
+        entity: Entity,
+        filter: Option<Document>,
+    ) -> Result<DeleteResult> {
+        Ok(self
+            .get_collection(entity.name())
+            .delete_many(filter.unwrap_or(doc! {}))?)
     }
 
     pub fn delete_one(&self, entity: Entity, filter: Document) -> Result<DeleteResult> {

@@ -1,4 +1,5 @@
-use serde::{Deserialize, Serialize};
+use polodb_core::bson::Document;
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::Value;
 // use uuid::Uuid;
 
@@ -7,31 +8,38 @@ use crate::libs::{
     taskqueue::types::{TQTimeout, TaskActionCTX},
 };
 
-use super::apollo::confirm::index::apollo_check;
+use super::apollo::check::index::apollo_check;
 
 #[derive(Serialize, Debug)]
-pub struct Response<T = ()> {
+pub struct Response {
     pub ok: bool,
     pub message: Option<String>,
-    pub data: Option<T>,
+    pub data: Option<Document>,
 }
 
-impl<T> Response<T> {
-    pub fn ok_none() -> Value {
-        serde_json::to_value(Response::<()> {
+impl Response {
+    pub fn ok_none() -> Self {
+        Response {
             ok: true,
             message: None,
             data: None,
-        })
-        .unwrap()
+        }
     }
-    pub fn fail_none() -> Value {
-        serde_json::to_value(Response::<()> {
+
+    pub fn ok_data(data: Document ) -> Self {
+        Response{
+            ok: true,
+            message: None,
+            data: Some(data)
+        }
+    }
+
+    pub fn fail_none() -> Self {
+        Response {
             ok: false,
             message: None,
             data: None,
-        })
-        .unwrap()
+        }
     }
 }
 

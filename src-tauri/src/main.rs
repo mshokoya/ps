@@ -4,7 +4,12 @@
 mod actions;
 mod libs;
 
-use actions::apollo::confirm::index::check_task;
+use actions::apollo::{
+    update::index::update_account,
+    delete::index::delete_accounts,
+    get::index::get_accounts,
+    check::index::check_task
+};
 use libs::taskqueue::index::TaskQueue;
 use libs::{db::index::DB, scraper::Scraper};
 use once_cell::sync::Lazy;
@@ -33,7 +38,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![check_task])
+        .invoke_handler(tauri::generate_handler![
+            check_task, 
+            get_accounts, 
+            delete_accounts,
+            update_account
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 

@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use anyhow::{anyhow, Context, Error, Result};
+use anyhow::{anyhow, Context, Result};
 use async_std::task::sleep;
 use polodb_core::bson::doc;
 use tauri::Manager;
@@ -126,7 +126,6 @@ pub async fn apollo_default_login(ctx: &TaskActionCTX, account: &Account) -> Res
 
 pub async fn apollo_login_credits_info(
     ctx: &TaskActionCTX,
-    account: &Account,
 ) -> Result<CreditsInfo> {
     let page = ctx.page.as_ref().unwrap();
 

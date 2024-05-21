@@ -10,8 +10,9 @@ use crate::{
         },
 };
 
+
 #[tauri::command]
-pub fn get_accounts(ctx: AppHandle, args: Document) -> R {
+pub fn delete_accounts(ctx: AppHandle, args: Document) -> R {
   match ctx.state::<DB>().find::<Account>(Entity::Account, Some(args)) {
     Ok(docs) => R::ok_data(to_document(&docs).unwrap()),
     Err(_) => R::ok_none()
