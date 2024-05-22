@@ -63,11 +63,8 @@ pub async fn apollo_demine(
     loop {
       sleep(Duration::from_secs(5)).await;
 
-      match ctx.page.as_ref().unwrap().url().await {
-        Ok(url) => {}
-        Err(err) => {
-          break
-        }
+      if ctx.page.as_ref().unwrap().url().await.is_err() {
+        break
       }
     }
 
