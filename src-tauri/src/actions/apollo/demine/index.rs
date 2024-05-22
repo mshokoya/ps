@@ -64,13 +64,8 @@ pub async fn apollo_demine(
       sleep(Duration::from_secs(5)).await;
 
       match ctx.page.as_ref().unwrap().url().await {
-        Ok(url) => {
-          println!("WE IN THe OK");
-          println!("{:?}", url);
-        }
+        Ok(url) => {}
         Err(err) => {
-          println!("WE IN THE ERROR");
-          println!("{:?}", err);
           break
         }
       }
