@@ -6,5 +6,5 @@ pub mod delete;
 pub mod demine;
 pub mod get;
 pub mod update;
-// pub mod login;
+pub mod login;
 // pub mod scrape;
