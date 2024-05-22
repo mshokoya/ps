@@ -61,11 +61,18 @@ function App() {
       await invoke("update_account", {
           filter: {"_id": "664d0d9809f4ac3e17d1f8b3"},
           update: {
-            "login_type": "D D DEEE DDDOMAINNZZZ",
-            "password": "LESS ADD A PASSWORDDSA",
-            "proxy": "0:0:0:0:3000",
-            "email": "mayo_s@hotmail.com"
+            "password": "mannyman17",
+            "email": "tessa@genzcompany.live"
           }
+        },
+      )
+    )
+  };
+
+  const handleDemine = async () => {
+    console.log(
+      await invoke("demine_task", {
+          args: {account_id: "664d0d9809f4ac3e17d1f8b3"}
         },
       )
     )
@@ -90,6 +97,7 @@ function App() {
       <button onClick={() => handleGet()}>Get</button>
       <button onClick={() => handleUpdate()}>Update</button>
       <button onClick={() => handleDelete()}>Delete</button>
+      <button onClick={() => handleDemine()}>Demine</button>
     </div>
   );
 }
