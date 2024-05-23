@@ -7,7 +7,11 @@ use crate::libs::{
     db::accounts::types::AccountArg, taskqueue::types::{TQTimeout, TaskActionCTX}
 };
 
-use super::apollo::{check::index::apollo_check, demine::index::apollo_demine};
+use super::apollo::{
+    check::index::apollo_check, 
+    demine::index::apollo_demine,
+    login::index::apollo_login
+};
 
 #[derive(Serialize, Debug)]
 pub struct Response {
@@ -53,7 +57,8 @@ pub enum TaskType {
     Enqueue,
     Dequeue,
     ApolloCheck,
-    ApolloDemine
+    ApolloDemine,
+    ApolloLogin
 }
 
 impl TaskType {
@@ -65,6 +70,7 @@ impl TaskType {
         match self {
             TaskType::ApolloCheck => apollo_check(ctx, args).await,
             TaskType::ApolloDemine => apollo_demine(ctx, args).await,
+            TaskType::ApolloLogin => apollo_login(ctx, args).await,
             _ => Ok(None),
         }
     }
