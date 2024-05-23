@@ -9,7 +9,8 @@ use actions::apollo::{
     delete::index::delete_accounts,
     get::index::get_accounts,
     check::index::check_task,
-    demine::index::demine_task
+    demine::index::demine_task,
+    login::index::login_task,
 };
 use libs::taskqueue::index::TaskQueue;
 use libs::{db::index::DB, scraper::Scraper};
@@ -44,7 +45,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             get_accounts, 
             delete_accounts,
             update_account,
-            demine_task
+            demine_task,
+            login_task
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -8,11 +8,9 @@ use tauri::{AppHandle, Manager};
 
 use crate::actions::apollo::lib::index::apollo_login_credits_info;
 use crate::actions::controllers::TaskType;
-use crate::libs::db::accounts::types::{Account};
 use crate::libs::taskqueue::index::TaskQueue;
-use crate::libs::taskqueue::types::Channels;
 use crate::{
-    actions::controllers::{Response as R},
+    actions::controllers::Response as R,
     libs::{
         db::{
             entity::Entity,
@@ -61,6 +59,7 @@ pub async fn apollo_login(
       if url.is_err() {
         return Err(anyhow!("page closed early"));
       }
+
       if url?.unwrap().contains("#/settings/credits/current") {
         let credits = apollo_login_credits_info(&ctx).await?;
         let args: ApolloLoginArgs = from_value(args.unwrap())?;
