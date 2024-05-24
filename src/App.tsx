@@ -32,7 +32,7 @@ function App() {
   const handleCheck = () => {
     invoke("check_task", {
       args: {
-        account_id: "664b69744bb5d236bf4308df",
+        account_id: "664d0d9809f4ac3e17d1f8b3",
         timeout: {
           time: 5000,
           rounds: 1,

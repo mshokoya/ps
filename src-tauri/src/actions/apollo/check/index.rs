@@ -57,6 +57,8 @@ pub async fn apollo_check(
     let args: ApolloCheckArgs = serde_json::from_value(args.unwrap())?;
     let db = ctx.handle.state::<DB>();
 
+    println!("{:?}",args.account_id);
+
     let account = db
         .find_one::<Account>(Entity::Account, Some(doc! {"_id": args.account_id}))
         .unwrap();
